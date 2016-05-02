@@ -1,69 +1,131 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <meta name="format-detection" content="telephone=no" />
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
-        <link rel="stylesheet" type="text/css" href="./bower_components/adorn/adorn.css" />
-        <meta name="manifest" content="./manifest.json" />
-        <script type="text/javascript" src="cordova.js"></script>
-        <script type="text/javascript" src="bower_components/adorn/adorn.js" async></script>
-        <title>Hello JS</title>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi"/>
+    <link rel="stylesheet" type="text/css" href="./bower_components/adorn/adorn.css"/>
+    <meta name="manifest" content="./manifest.json"/>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="bower_components/adorn/adorn.js" async></script>
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
+    <title>Hello JS</title>
 
-    </head>
-    <body>
+</head>
+<body>
 
-        <h1>Demo: <a href="https://adodson.com/hello.js/">Hello.js</a> in Cordova App</h1>
-        <button onclick="login('google')">Google</button>
-        <button onclick="login('facebook')">Facebook</button>
-        <button onclick="login('windows')">Windows</button>
-        <button onclick="login('twitter')">Twitter</button>
-        <button onclick="login('instagram')">Instagram</button>
+<h1>Demo: <a href="https://adodson.com/hello.js/">Hello.js</a> in Cordova App</h1>
+<button onclick="login('google')">Google</button>
+<button onclick="login('facebook')">Facebook</button>
+<button onclick="login('windows')">Windows</button>
+<button onclick="login('twitter')">Twitter</button>
+<button onclick="login('instagram')">Instagram</button>
 
 <pre>
 Demo HelloJS with PhoneGap
 Signin above to view basic account details here
 </pre>
 
-        <!--
-         Include the HelloJS library and modules you need
-        -->
-        <script type="text/javascript" src="bower_components/hello/dist/hello.all.js"></script>
-        <script>
+<!--
+ Include the HelloJS library and modules you need
+-->
+<script type="text/javascript" src="bower_components/hello/dist/hello.all.js"></script>
+<script>
 
-            // Initate the library
-            hello.init({
-                google : '880596183876-cd2po4ef4hrtm8kqt83df35rr3e3e3dj.apps.googleusercontent.com',
-                facebook : '206992003025507',
-                windows : '00000000400D8578',
-                twitter: 'eQuyZuECKWPiv3D7E4qdg',
-                instagram: 'e47d210f864c4b1ca94225ddab97205a'
-            }, {
-                //
-                // Define the OAuth2 return URL
-                // This can be anything you like, as long as its the callback associated with the your provider-app client id.
-                // It could even be localhost, e.g. http://localhost/somepath as phonegap is not run from a domain so SameOrigin breaks, instead we take advantage of being able to read the popups URL in PhoneGap
-                redirect_uri : 'https://www.getgell.com/hello.js/redirect.html'
-            });
+    // Initate the library
+    hello.init({
+        google: '880596183876-cd2po4ef4hrtm8kqt83df35rr3e3e3dj.apps.googleusercontent.com',
+        facebook: '206992003025507',
+        windows: '00000000400D8578',
+        twitter: 'eQuyZuECKWPiv3D7E4qdg',
+        instagram: 'e47d210f864c4b1ca94225ddab97205a'
+    }, {
+        //
+        // Define the OAuth2 return URL
+        // This can be anything you like, as long as its the callback associated with the your provider-app client id.
+        // It could even be localhost, e.g. http://localhost/somepath as phonegap is not run from a domain so SameOrigin breaks, instead we take advantage of being able to read the popups URL in PhoneGap
+        redirect_uri: 'http://10.0.3.2:9000/authenticate/facebook'
+    });
 
-            function login(network) {
-                var hi = hello(network);
+    function login(network) {
+        var hi = hello(network);
 
-                hi.login()
-                .then(function(r) {
+        hi.login()
+                .then(function (r) {
                     log(r);
                     return hi.api('me');
                 })
                 .then(log, log);
+    }
+
+    function log(r) {
+        var rdata = JSON.stringify(r, null, "\t");
+
+        console.log("rdata: " + rdata);
+
+
+        var s = document.createTextNode(rdata);
+
+        var pre = document.getElementsByTagName('pre')[0];
+        pre.insertBefore(s, pre.firstChild);
+    }
+
+
+    var sessionStart = function (auth) {
+
+        //var stuff = JSON.stringify(hello('facebook').api('me'));
+
+        console.log("network: " + auth.network);
+
+        /*
+        var stuff = JSON.stringify(hello('facebook').api('me'));
+        console.log('me: ' + stuff);
+
+        $.ajax({
+            type: "GET",
+            url: 'http://10.0.3.2:9000' + '/rest/authenticate/' + 'facebook',
+            data: stuff,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                alert("success data: " + JSON.stringify(data));
+                console.log(data);
+            },
+            error: function (jqxhr) {
+                alert("data error0: " + jqxhr);
+                alert("data error1: " + JSON.stringify(jqxhr));
+                alert("data error2: " + jqxhr.responseText);
             }
+        });
+        */
 
-            function log(r){
-                var s = document.createTextNode(JSON.stringify(r, null, "\t"));
-                var pre = document.getElementsByTagName('pre')[0];
-                pre.insertBefore(s, pre.firstChild);
+    };
+    //hello.on('auth.login', sessionStart(auth));
+
+    hello.on('auth.login', function(auth) {
+
+        var stuff = hello.getAuthResponse(auth.network);
+        console.log("stuff: " + JSON.stringify(stuff));
+
+        $.ajax({
+            type: "POST",
+            url: 'http://10.0.3.2:9000' + '/rest/authenticate/' + auth.network + '?Csrf-Token=nocheck',
+            data: JSON.stringify(stuff),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                alert("success data: " + JSON.stringify(data));
+                console.log(data);
+            },
+            error: function (jqxhr) {
+                alert("data error1: " + JSON.stringify(jqxhr));
             }
-        </script>
+        });
+    });
 
 
-    </body>
+</script>
+
+
+</body>
 </html>
